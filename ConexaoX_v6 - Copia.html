@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Conexão X">
+<meta name="theme-color" content="#185FA5">
+<title>Conexão X</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#eef2f7;color:#1a1a2e}
+/* LOGIN */
+#tela-login{position:fixed;inset:0;background:#185FA5;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{background:#fff;border-radius:20px;padding:32px 24px;width:100%;max-width:360px;text-align:center}
+.login-box h1{font-size:26px;font-weight:800;color:#185FA5;margin:10px 0 4px}
+.login-box p{font-size:12px;color:#64748b;margin-bottom:24px}
+.login-box input{width:100%;padding:14px;border:2px solid #e2e8f0;border-radius:12px;font-size:18px;text-align:center;letter-spacing:4px;margin-bottom:12px;font-family:inherit}
+.login-box input:focus{outline:none;border-color:#185FA5}
+.login-box button{width:100%;padding:15px;background:#185FA5;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer}
+#login-msg{color:#dc2626;font-size:13px;margin-top:10px;font-weight:600;height:20px}
+/* APP */
+#app{display:none}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:600px;display:flex;background:#fff;border-top:1px solid #e2e8f0;z-index:100;box-shadow:0 -2px 12px rgba(0,0,0,0.08)}
+.nav button{flex:1;padding:10px 2px 8px;border:none;background:none;color:#94a3b8;font-size:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:inherit;font-weight:600}
+.nav button i{font-size:22px}
+.nav button.active{color:#185FA5}
+.wrap{max-width:600px;margin:0 auto;padding:12px;padding-bottom:80px}
+.page{display:none}.page.active{display:block}
+.hdr{background:#185FA5;color:#fff;padding:14px 16px;border-radius:14px;margin-bottom:12px;box-shadow:0 4px 12px rgba(24,95,165,.25)}
+.hdr h1{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.hdr p{font-size:11px;opacity:.8;margin-top:3px;padding-left:26px}
+.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.ct{font-size:12px;font-weight:800;color:#185FA5;margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
+.fld{margin-bottom:11px}
+.fld label{display:block;font-size:11px;color:#64748b;margin-bottom:4px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.fld input,.fld textarea{width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:10px;background:#f8fafc;color:#1a1a2e;font-size:14px;font-family:inherit}
+.fld input:focus,.fld textarea:focus{outline:none;border-color:#185FA5;background:#fff}
+.fld textarea{min-height:60px;resize:vertical}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tog{display:flex;border-radius:10px;overflow:hidden;border:1.5px solid #e2e8f0;margin-top:4px}
+.tog button{flex:1;padding:13px;border:none;background:#f8fafc;color:#64748b;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.tog button:first-child{border-right:1px solid #e2e8f0}
+.tog button.sim{background:#fee2e2;color:#991b1b}
+.tog button.nao{background:#dcfce7;color:#166534}
+.med-btn{width:100%;padding:13px 14px;border:1.5px solid #e2e8f0;border-radius:10px;background:#f8fafc;color:#475569;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;text-align:left;margin-bottom:6px;display:block}
+.med-btn.sel{background:#dbeafe;border-color:#185FA5;color:#1e40af;font-weight:700}
+.bp{width:100%;padding:14px;background:#185FA5;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit}
+.bp:active{background:#0C447C}
+.bg{width:100%;padding:14px;background:#166534;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit}
+.bs{width:100%;padding:12px;background:#f1f5f9;color:#475569;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;cursor:pointer;margin-top:8px;font-family:inherit;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px}
+.bd{background:#dc2626;color:#fff;border:none;padding:12px;border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:700;width:100%}
+.selbox{min-height:48px;border:1.5px dashed #cbd5e1;border-radius:10px;padding:10px;background:#f8fafc;margin-top:6px}
+.tag{display:inline-flex;align-items:center;gap:4px;margin:3px;padding:5px 10px;background:#dbeafe;border-radius:20px;font-size:12px;color:#1e40af;font-weight:700}
+.inc-btn{display:inline-block;margin:3px;padding:7px 12px;border:1.5px solid #e2e8f0;border-radius:20px;font-size:12px;cursor:pointer;background:#fff;color:#475569}
+.inc-btn.sel{background:#dbeafe;border-color:#185FA5;color:#1e40af;font-weight:700}
+.inc-sec h4{font-size:11px;font-weight:800;color:#64748b;margin-bottom:6px;padding:4px 8px;background:#f1f5f9;border-radius:6px;text-transform:uppercase}
+.mtabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:10px}
+.mtab{flex-shrink:0;padding:7px 14px;border:1.5px solid #e2e8f0;border-radius:20px;font-size:12px;background:#fff;cursor:pointer;color:#64748b;font-weight:600}
+.mtab.active{background:#185FA5;color:#fff;border-color:#185FA5}
+.pc{background:#fff;border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.06);display:flex;align-items:center;gap:10px}
+.av{width:44px;height:44px;border-radius:50%;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#185FA5;flex-shrink:0}
+.pn{font-weight:700;font-size:14px}
+.pi{font-size:12px;color:#64748b;margin-top:2px}
+.pe{font-size:12px;color:#185FA5;margin-top:2px;font-weight:600}
+.sb{width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:12px;background:#fff;font-size:14px;margin-bottom:10px;font-family:inherit}
+.dia-lbl{font-size:11px;font-weight:800;color:#94a3b8;padding:6px 0;border-bottom:1px solid #e2e8f0;margin-bottom:8px;text-transform:uppercase;letter-spacing:.6px}
+.dr{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:13px}
+.dl{color:#64748b;font-size:12px;font-weight:600;min-width:110px}
+.dv{font-weight:600;text-align:right;max-width:58%;word-break:break-word}
+.bs-sim{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#fee2e2;color:#991b1b}
+.bs-nao{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#dcfce7;color:#166534}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat-card{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.stat-num{font-size:28px;font-weight:800;color:#185FA5}
+.stat-lbl{font-size:11px;color:#64748b;margin-top:3px;font-weight:700;text-transform:uppercase}
+.ret-form{background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:14px;margin-top:12px}
+.ret-form h4{font-size:12px;font-weight:800;color:#166534;margin-bottom:10px;text-transform:uppercase}
+.foto-box{border:1.5px dashed #cbd5e1;border-radius:10px;padding:16px;text-align:center;cursor:pointer;background:#f8fafc;min-height:80px;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.sync{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px;margin-bottom:10px;width:fit-content}
+.sync-ok{background:#dcfce7;color:#166534}
+.sync-off{background:#fee2e2;color:#991b1b}
+.sync-wait{background:#fef9c3;color:#854d0e}
+#toast-area{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:9998;width:92%;max-width:380px;pointer-events:none}
+.toast{padding:13px 16px;border-radius:12px;font-size:14px;margin-bottom:8px;box-shadow:0 4px 20px rgba(0,0,0,.15);font-weight:700}
+.tok{background:#166534;color:#fff}
+.terr{background:#991b1b;color:#fff}
+/* ADMIN MODAL */
+#modal-admin{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+#modal-admin.open{display:flex}
+.modal-box{background:#fff;border-radius:18px;padding:24px;width:100%;max-width:380px}
+.modal-box h3{font-size:16px;font-weight:800;color:#185FA5;margin-bottom:14px}
+</style>
+</head>
+<body>
+
+<!-- TELA DE LOGIN -->
+<div id="tela-login">
+  <div class="login-box">
+    <div style="font-size:52px">🩻</div>
+    <h1>Conexão X</h1>
+    <p>Complexo Hospitalar Zona Noroeste<br>Radiologia Digital</p>
+    <input type="password" id="inp-senha" placeholder="••••••••" autocomplete="off"
+      onkeydown="if(event.key==='Enter')login()">
+    <button onclick="login()">🔓 Entrar</button>
+    <div id="login-msg"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast-area"></div>
+
+<!-- MODAL ADMIN -->
+<div id="modal-admin">
+  <div class="modal-box">
+    <h3>🔐 Acesso Administrador</h3>
+    <div class="fld"><label>Senha do administrador</label>
+      <input type="password" id="inp-admin" placeholder="Senha admin"
+        onkeydown="if(event.key==='Enter')confirmarAdmin()">
+    </div>
+    <div id="admin-msg" style="color:#dc2626;font-size:13px;margin-bottom:8px;font-weight:600"></div>
+    <button class="bp" onclick="confirmarAdmin()"><i class="ti ti-check"></i> Confirmar</button>
+    <button class="bs" onclick="document.getElementById('modal-admin').classList.remove('open')"><i class="ti ti-x"></i> Cancelar</button>
+  </div>
+</div>
+
+<!-- APP PRINCIPAL -->
+<div id="app">
+  <div id="toast-area2"></div>
+  <nav class="nav">
+    <button class="active" onclick="goTo('entrevista',this)"><i class="ti ti-clipboard-list"></i>Entrevista</button>
+    <button onclick="goTo('incidencias',this)"><i class="ti ti-bone"></i>Incidências</button>
+    <button onclick="goTo('pedido',this)"><i class="ti ti-scan"></i>Pedido</button>
+    <button onclick="goTo('arquivo',this)"><i class="ti ti-archive"></i>Arquivo</button>
+  </nav>
+  <div class="wrap">
+
+    <!-- ENTREVISTA -->
+    <div id="pg-entrevista" class="page active">
+      <div class="hdr"><h1><i class="ti ti-radio"></i> Conexão X</h1><p>Complexo Hospitalar Zona Noroeste · Radiologia Digital</p></div>
+      <div id="sync-bar"></div>
+      <div class="card">
+        <div class="ct"><i class="ti ti-user"></i> Dados do paciente</div>
+        <div class="fld"><label>Nome completo *</label><input id="f-nome" type="text" placeholder="Nome do paciente"></div>
+        <div class="r2">
+          <div class="fld"><label>Telefone</label><input id="f-tel" type="tel" placeholder="(00) 00000-0000"></div>
+          <div class="fld"><label>Nascimento</label><input id="f-nasc" type="date"></div>
+        </div>
+        <div class="r2">
+          <div class="fld"><label>Nº SUS</label><input id="f-sus" placeholder="000 0000 0000 0000"></div>
+          <div class="fld"><label>CPF / RG</label><input id="f-cpf" placeholder="000.000.000-00"></div>
+        </div>
+        <div class="fld"><label>Razão / Sintomas</label><textarea id="f-sint" placeholder="Descreva os sintomas..."></textarea></div>
+      </div>
+      <div class="card">
+        <div class="ct"><i class="ti ti-shield-check"></i> Triagem de segurança</div>
+        <div class="fld"><label>Possibilidade de gravidez?</label>
+          <div class="tog"><button id="grav-sim" onclick="tog('grav','sim')">✓ Sim</button><button id="grav-nao" class="nao" onclick="tog('grav','nao')">✗ Não</button></div>
+        </div>
+        <div class="fld"><label>Fumante?</label>
+          <div class="tog"><button id="fum-sim" onclick="tog('fum','sim')">✓ Sim</button><button id="fum-nao" class="nao" onclick="tog('fum','nao')">✗ Não</button></div>
+        </div>
+        <div class="fld"><label>Prótese metálica, marca-passo, stent ou artefato metálico?</label>
+          <div class="tog"><button id="met-sim" onclick="tog('met','sim')">✓ Sim</button><button id="met-nao" class="nao" onclick="tog('met','nao')">✗ Não</button></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct"><i class="ti ti-stethoscope"></i> Informações do exame</div>
+        <div class="r2">
+          <div class="fld"><label>Data do atendimento</label><input id="f-data" type="date"></div>
+          <div class="fld"><label>Horário agendado</label><input id="f-hag" type="time"></div>
+        </div>
+        <div class="fld"><label>Horário realizado</label><input id="f-hre" type="time"></div>
+        <div class="fld"><label>Médico responsável pelo laudo</label>
+          <button class="med-btn" id="med-0" onclick="selMed('Dr. Jonatas N. G. Bicudo',0)">Dr. Jonatas N. G. Bicudo</button>
+          <button class="med-btn" id="med-1" onclick="selMed('Dr. Leandro de Andrade Amoedo',1)">Dr. Leandro de Andrade Amoedo</button>
+          <button class="med-btn" id="med-2" onclick="selMed('Dr. Fabio Davis Mongão',2)">Dr. Fabio Davis Mongão</button>
+          <input type="hidden" id="f-mlaudo">
+        </div>
+        <label style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;display:block;margin:8px 0 4px">Exames selecionados</label>
+        <div class="selbox" id="ent-exames"><span style="font-size:13px;color:#94a3b8">Vá à aba <strong>Incidências</strong> para selecionar</span></div>
+        <div class="fld" style="margin-top:12px">
+          <label>Técnico 1 — número</label>
+          <input id="f-tec1" type="number" min="1" max="99" placeholder="Ex: 5" oninput="autoTec('f-tec1','td1')" style="width:100px">
+          <div id="td1" style="display:none;margin-top:5px;padding:8px 12px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:8px;font-size:13px;font-weight:600;color:#166534"></div>
+        </div>
+        <div class="fld">
+          <label>Técnico 2 — número</label>
+          <input id="f-tec2" type="number" min="1" max="99" placeholder="Ex: 12" oninput="autoTec('f-tec2','td2')" style="width:100px">
+          <div id="td2" style="display:none;margin-top:5px;padding:8px 12px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:8px;font-size:13px;font-weight:600;color:#166534"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct"><i class="ti ti-camera"></i> Fotos do atendimento</div>
+        <div class="r2">
+          <div>
+            <label style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;display:block;margin-bottom:5px">Ficha</label>
+            <div class="foto-box" onclick="document.getElementById('fi-ficha').click()">
+              <img id="prev-ficha" style="display:none;width:100%;border-radius:8px">
+              <div id="ph-ficha"><i class="ti ti-camera" style="font-size:26px;color:#94a3b8"></i><p style="font-size:11px;color:#94a3b8;margin-top:4px">Fotografar</p></div>
+            </div>
+            <input type="file" id="fi-ficha" accept="image/*" capture="environment" style="display:none" onchange="capFoto('ficha',event)">
+          </div>
+          <div>
+            <label style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;display:block;margin-bottom:5px">Pedido</label>
+            <div class="foto-box" onclick="document.getElementById('fi-pedido').click()">
+              <img id="prev-pedido" style="display:none;width:100%;border-radius:8px">
+              <div id="ph-pedido"><i class="ti ti-camera" style="font-size:26px;color:#94a3b8"></i><p style="font-size:11px;color:#94a3b8;margin-top:4px">Fotografar</p></div>
+            </div>
+            <input type="file" id="fi-pedido" accept="image/*" capture="environment" style="display:none" onchange="capFoto('pedido',event)">
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct"><i class="ti ti-package"></i> Retirada do exame</div>
+        <div class="fld"><label>Data da retirada</label><input id="f-rdata" type="date"></div>
+        <div class="fld"><label>Documento apresentado</label><input id="f-rdoc" placeholder="RG, CPF, CNH..."></div>
+        <div class="fld"><label>Nome de quem retirou</label><input id="f-rnome" placeholder="Nome completo"></div>
+      </div>
+      <button class="bp" onclick="salvar()"><i class="ti ti-device-floppy"></i> Salvar e arquivar</button>
+      <button class="bg" onclick="salvarBaixar()"><i class="ti ti-file-download"></i> Salvar + Baixar ficha</button>
+      <button class="bs" onclick="limpar()"><i class="ti ti-refresh"></i> Limpar formulário</button>
+    </div>
+
+    <!-- INCIDÊNCIAS -->
+    <div id="pg-incidencias" class="page">
+      <div class="hdr"><h1><i class="ti ti-bone"></i> Conexão X — Incidências</h1><p>Toque para selecionar · confirme para adicionar</p></div>
+      <div class="card">
+        <div class="ct"><i class="ti ti-check"></i> Selecionadas: <span id="sel-count" style="font-weight:400;color:#64748b">0</span></div>
+        <div class="selbox" id="sel-display"><span style="font-size:13px;color:#94a3b8">Nenhuma selecionada</span></div>
+        <button class="bp" onclick="confirmarSel()"><i class="ti ti-arrow-left"></i> Confirmar e voltar</button>
+      </div>
+      <div class="card">
+        <div class="ct"><i class="ti ti-plus"></i> Adicionar personalizada</div>
+        <div class="r2">
+          <div class="fld"><label>Região</label><input id="nr" placeholder="Ex: Joelho"></div>
+          <div class="fld"><label>Incidência</label><input id="ni" placeholder="Ex: AP e Perfil"></div>
+        </div>
+        <button class="bs" onclick="addInc()"><i class="ti ti-plus"></i> Adicionar ao banco</button>
+      </div>
+      <div class="card"><div class="ct"><i class="ti ti-database"></i> Todas as incidências</div><div id="inc-banco"></div></div>
+      <div class="card">
+        <div class="ct"><i class="ti ti-users"></i> Técnicos cadastrados</div>
+        <div id="tec-lista" style="margin-bottom:10px"></div>
+        <button class="bp" onclick="abrirAdminTec()"><i class="ti ti-shield-lock"></i> Adicionar técnico (Admin)</button>
+      </div>
+    </div>
+
+    <!-- PEDIDO -->
+    <div id="pg-pedido" class="page">
+      <div class="hdr"><h1><i class="ti ti-scan"></i> Conexão X — Pedido Médico</h1><p>Tire foto — a IA extrai os dados automaticamente</p></div>
+      <div class="card">
+        <div style="border:2px dashed #93c5fd;border-radius:14px;padding:24px;text-align:center;background:#f0f7ff;cursor:pointer" onclick="document.getElementById('fi-ped-ia').click()">
+          <i class="ti ti-camera" style="font-size:40px;color:#3b82f6"></i>
+          <p style="font-size:13px;color:#3b82f6;margin-top:8px;font-weight:600">Toque para fotografar o pedido</p>
+          <input type="file" id="fi-ped-ia" accept="image/*" capture="environment" style="display:none" onchange="procPedido(event)">
+        </div>
+        <div id="prev-ped" style="display:none;margin-top:10px"><img id="prev-ped-img" style="width:100%;border-radius:10px"></div>
+        <div id="ai-load" style="display:none;text-align:center;padding:20px;color:#185FA5;font-size:14px;font-weight:700"><i class="ti ti-loader-2" style="font-size:30px;display:block;margin-bottom:8px"></i>Analisando com IA...</div>
+      </div>
+      <div class="card" id="ai-result" style="display:none">
+        <div class="ct"><i class="ti ti-wand"></i> Dados extraídos</div>
+        <div class="fld"><label>Paciente</label><input id="ai-nome"></div>
+        <div class="fld"><label>Médico</label><input id="ai-med"></div>
+        <div class="fld"><label>Exames</label><textarea id="ai-ex"></textarea></div>
+        <div class="fld"><label>Observações</label><textarea id="ai-ob"></textarea></div>
+        <button class="bp" onclick="preencherPedido()"><i class="ti ti-arrow-right"></i> Preencher entrevista</button>
+      </div>
+    </div>
+
+    <!-- ARQUIVO -->
+    <div id="pg-arquivo" class="page">
+      <div class="hdr"><h1><i class="ti ti-archive"></i> Conexão X — Arquivo</h1><p>Organizado por mês e dia da semana</p></div>
+      <div class="stat-grid" id="stats"></div>
+      <div class="card">
+        <div class="ct"><i class="ti ti-database-export"></i> Backup</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <button class="bp" style="margin:0;font-size:13px;padding:12px" onclick="exportBackup()"><i class="ti ti-download"></i> Exportar</button>
+          <button class="bs" style="margin:0;font-size:13px;padding:12px" onclick="document.getElementById('fi-imp').click()"><i class="ti ti-upload"></i> Importar</button>
+        </div>
+        <input type="file" id="fi-imp" accept=".json" style="display:none" onchange="importBackup(event)">
+      </div>
+      <input class="sb" placeholder="🔍 Buscar por nome, SUS ou exame..." oninput="filtrar(this.value)">
+      <div class="mtabs" id="mtabs"></div>
+      <div id="arq-lista"></div>
+      <div id="arq-det" style="display:none"></div>
+    </div>
+
+  </div><!-- wrap -->
+</div><!-- app -->
+
+<script>
+var SENHA='chzn2026', SENHA_ADM='adminchzn2026';
+var SHEETS='https://script.google.com/macros/s/AKfycbz7vUoSpUGVEHEt7Qnipjmg2wzkebKbaFL4t-2Kq4dE-_wvgl5ACCzg3YWrJTEKwsru/exec';
+var MESES=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+var DSEM=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+var TRI={grav:'nao',fum:'nao',met:'nao'};
+var selIncs=[],mesSel=null,pacientes=[],filtroAtual='';
+var fotoFicha=null,fotoPedido=null,adminCB=null;
+
+var TECNICOS={
+  1:{nome:'Adriano Silva',reg:'31.355-1'},2:{nome:'Amadeu Donato',reg:'23.846-9'},
+  3:{nome:'Andréia Lima',reg:'31.639-8'},4:{nome:'Carlos Clayde',reg:'23.831-1'},
+  5:{nome:'Célia Moreira',reg:'24.286-7'},6:{nome:'Denis Gonçalves',reg:'31.343-7'},
+  7:{nome:'Isac Paixão',reg:'31.813-9'},8:{nome:'Ricardo Arruda',reg:'41.278-3'},
+  9:{nome:'Edimar Silverio da Costa',reg:'41.349-2'},10:{nome:'José Roberto',reg:'30.427-9'},
+  11:{nome:'Katia Ribeiro',reg:'32.662-9'},12:{nome:'Leonardo Lelis',reg:'31.620-8'},
+  13:{nome:'Luana Malta',reg:'31.604-2'},14:{nome:'Luciano Lermes',reg:'17.477-6'},
+  15:{nome:'Marcelo Mastelaro',reg:'24.288-3'},16:{nome:'Marcio Teixeira',reg:'30.434-5'},
+  17:{nome:'Maria de Fátima Carvalho',reg:'23.839-4'},18:{nome:'Paulo Silva',reg:'23.856-8'},
+  19:{nome:'Ester Fabiana Gomes Leite',reg:'40.043-2'},20:{nome:'Amanda Gonçalves Iglesias',reg:'40.649-6'},
+  21:{nome:'Rosangela Santos',reg:'30.431-1'},22:{nome:'Silvio Santos',reg:'33.171-0'},
+  23:{nome:'Wagner Moraes',reg:'24.330-3'},24:{nome:'Washington Gonçalves',reg:'23.859-2'}
+};
+
+var INCS={
+  'Tórax':['PA (Póstero-Anterior)','Perfil','AP (Ântero-Posterior)','PA + Perfil','Decúbito lateral'],
+  'Coluna cervical':['AP','Perfil','Oblíqua direita','Oblíqua esquerda','AP + Perfil','Transoral'],
+  'Coluna torácica':['AP','Perfil','AP + Perfil'],
+  'Coluna lombar':['AP','Perfil','Oblíqua direita','Oblíqua esquerda','AP + Perfil','Ferguson'],
+  'Pelve / Quadril':['AP pelve','Axial (Lauenstein)','AP quadril direito','AP quadril esquerdo'],
+  'Ombro':['AP','Perfil (escápula-Y)','Axial','Grashey'],
+  'Cotovelo':['AP','Perfil','Oblíqua'],
+  'Punho / Mão':['AP punho','Perfil punho','PA punho','AP mão','Oblíqua mão'],
+  'Joelho':['AP','Perfil','Oblíqua','Axial patela (Skyline)','Schuss (carga)'],
+  'Tornozelo / Pé':['AP tornozelo','Perfil tornozelo','AP pé','Oblíqua pé','Axial calcâneo'],
+  'Crânio':['AP','PA','Perfil','Towne','Caldwell'],
+  'Seios da face':['Waters','PA (Caldwell)','Perfil','Hirtz'],
+  'Abdômen':['AP em pé','AP em decúbito','AP + Perfil'],
+  'Bacia':['AP','Inlet','Outlet'],
+  'Esterno':['PA oblíquo','Perfil'],
+  'Clavícula':['AP','Axial'],
+  'Escápula':['AP','Perfil'],
+  'Sacro / Cóccix':['AP','Perfil'],
+  'Calcâneo':['Axial','Perfil'],
+  'ATM':['Transcraniana aberta','Transcraniana fechada']
+};
+
+// LOGIN
+function login(){
+  var s=document.getElementById('inp-senha').value.trim();
+  if(s===SENHA||s===SENHA_ADM){
+    document.getElementById('tela-login').style.display='none';
+    document.getElementById('app').style.display='block';
+    document.getElementById('f-data').value=new Date().toISOString().split('T')[0];
+    loadP();carregarNuvem();renderTecLista();renderStats();
+  }else{
+    document.getElementById('login-msg').textContent='❌ Senha incorreta!';
+    document.getElementById('inp-senha').value='';
+    document.getElementById('inp-senha').focus();
+  }
+}
+
+// TOAST
+function toast(msg,ok){
+  var a=document.getElementById('toast-area');
+  var d=document.createElement('div');
+  d.className='toast '+(ok?'tok':'terr');
+  d.textContent=(ok?'✓ ':' ⚠ ')+msg;
+  a.appendChild(d);
+  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},3000);
+}
+
+// SYNC STATUS
+function syncStatus(tipo,msg){
+  var b=document.getElementById('sync-bar');
+  if(!b)return;
+  b.innerHTML='<div class="sync sync-'+tipo+'"><i class="ti ti-cloud'+(tipo==='ok'?'-check':tipo==='off'?'-off':'')+'"></i> '+msg+'</div>';
+}
+
+// NAV
+function goTo(pg,btn){
+  document.querySelectorAll('.page').forEach(function(e){e.classList.remove('active');});
+  document.querySelectorAll('.nav button').forEach(function(e){e.classList.remove('active');});
+  document.getElementById('pg-'+pg).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(pg==='incidencias'){renderBanco();renderTecLista();}
+  if(pg==='arquivo'){mesSel=null;renderArq(filtroAtual);renderStats();}
+  window.scrollTo(0,0);
+}
+
+// TOGGLE TRIAGEM
+function tog(c,v){
+  TRI[c]=v;
+  document.getElementById(c+'-sim').className='tog button'+(v==='sim'?' sim':'');
+  document.getElementById(c+'-nao').className='tog button'+(v==='nao'?' nao':'');
+}
+
+// MÉDICO
+function selMed(n,i){
+  document.getElementById('f-mlaudo').value=n;
+  [0,1,2].forEach(function(j){document.getElementById('med-'+j).className='med-btn'+(i===j?' sel':'');});
+}
+
+// TÉCNICO AUTO
+function autoTec(campo,disp){
+  var v=document.getElementById(campo).value.trim();
+  var d=document.getElementById(disp);
+  var n=parseInt(v);
+  if(!v){d.style.display='none';return;}
+  if(TECNICOS[n]){
+    d.textContent=TECNICOS[n].nome+' — Reg. '+TECNICOS[n].reg;
+    d.style.display='block';
+  }else{
+    d.textContent='Nº '+v+' não encontrado';
+    d.style.color='#991b1b';d.style.display='block';
+  }
+}
+function getTec(campo){var n=parseInt(document.getElementById(campo).value);return TECNICOS[n]?TECNICOS[n].nome:'';}
+function fmtD(d){if(!d)return'—';var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
+
+// FOTOS
+function capFoto(t,ev){
+  var f=ev.target.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(e){
+    if(t==='ficha'){
+      fotoFicha=e.target.result;
+      document.getElementById('prev-ficha').src=e.target.result;
+      document.getElementById('prev-ficha').style.display='block';
+      document.getElementById('ph-ficha').style.display='none';
+    }else{
+      fotoPedido=e.target.result;
+      document.getElementById('prev-pedido').src=e.target.result;
+      document.getElementById('prev-pedido').style.display='block';
+      document.getElementById('ph-pedido').style.display='none';
+    }
+    toast('Foto capturada!',true);
+  };
+  r.readAsDataURL(f);
+}
+
+// INCIDÊNCIAS
+function renderBanco(){
+  var b=document.getElementById('inc-banco');b.innerHTML='';
+  Object.keys(INCS).forEach(function(reg){
+    var s=document.createElement('div');s.className='inc-sec';
+    s.innerHTML='<h4>'+reg+'</h4>';
+    INCS[reg].forEach(function(inc){
+      var k=reg+' — '+inc;
+      var btn=document.createElement('span');
+      btn.className='inc-btn'+(selIncs.indexOf(k)>=0?' sel':'');
+      btn.textContent=inc;
+      btn.onclick=function(){togInc(k,btn);};
+      s.appendChild(btn);
+    });
+    b.appendChild(s);
+  });
+}
+function togInc(k,btn){
+  var i=selIncs.indexOf(k);
+  if(i>=0){selIncs.splice(i,1);btn.classList.remove('sel');}
+  else{selIncs.push(k);btn.classList.add('sel');}
+  renderSel();
+}
+function renderSel(){
+  var d=document.getElementById('sel-display');
+  document.getElementById('sel-count').textContent=selIncs.length;
+  if(!selIncs.length){d.innerHTML='<span style="font-size:13px;color:#94a3b8">Nenhuma selecionada</span>';return;}
+  d.innerHTML=selIncs.map(function(k){return '<span class="tag">'+k+' <span style="cursor:pointer;font-size:16px" onclick="remInc(\''+k.replace(/'/g,"\\'")+'\')">&times;</span></span>';}).join('');
+}
+function remInc(k){selIncs=selIncs.filter(function(x){return x!==k;});renderBanco();renderSel();}
+function confirmarSel(){
+  var d=document.getElementById('ent-exames');
+  if(!selIncs.length){d.innerHTML='<span style="font-size:13px;color:#94a3b8">Vá à aba <strong>Incidências</strong> para selecionar</span>';}
+  else{d.innerHTML=selIncs.map(function(k,i){return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f1f5f9"><span style="font-size:13px">'+(i+1)+'. '+k+'</span><label style="display:flex;align-items:center;gap:5px;font-size:12px;color:#64748b;cursor:pointer"><input type="checkbox" style="width:20px;height:20px;accent-color:#185FA5"> Impresso</label></div>';}).join('');}
+  goTo('entrevista',document.querySelectorAll('.nav button')[0]);
+  toast(selIncs.length+' exame(s) adicionado(s)!',true);
+}
+function addInc(){
+  var r=document.getElementById('nr').value.trim(),i=document.getElementById('ni').value.trim();
+  if(!r||!i){toast('Preencha região e incidência.',false);return;}
+  if(!INCS[r])INCS[r]=[];
+  if(INCS[r].indexOf(i)<0)INCS[r].push(i);
+  document.getElementById('nr').value='';document.getElementById('ni').value='';
+  renderBanco();toast('Incidência adicionada!',true);
+}
+
+// TÉCNICOS GERENCIAR
+function renderTecLista(){
+  var d=document.getElementById('tec-lista');if(!d)return;
+  var nums=Object.keys(TECNICOS).map(Number).sort(function(a,b){return a-b;});
+  d.innerHTML=nums.map(function(n){
+    return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f1f5f9;font-size:13px">'
+      +'<span><strong>Nº '+n+'</strong> — '+TECNICOS[n].nome+'</span>'
+      +'<span style="font-size:11px;color:#64748b">'+TECNICOS[n].reg+'</span></div>';
+  }).join('');
+}
+function abrirAdminTec(){
+  document.getElementById('inp-admin').value='';
+  document.getElementById('admin-msg').textContent='';
+  adminCB=mostrarFormTec;
+  document.getElementById('modal-admin').classList.add('open');
+}
+function confirmarAdmin(){
+  if(document.getElementById('inp-admin').value.trim()===SENHA_ADM){
+    document.getElementById('modal-admin').classList.remove('open');
+    if(adminCB)adminCB();
+  }else{
+    document.getElementById('admin-msg').textContent='❌ Senha incorreta!';
+    document.getElementById('inp-admin').value='';
+  }
+}
+function mostrarFormTec(){
+  var d=document.getElementById('tec-lista');
+  var f='<div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:14px;margin-bottom:10px">'
+    +'<p style="font-size:12px;font-weight:800;color:#166534;margin-bottom:10px;text-transform:uppercase">Novo técnico</p>'
+    +'<div class="fld"><label>Número</label><input type="number" id="nt-num" placeholder="Ex: 25" min="1"></div>'
+    +'<div class="fld"><label>Nome completo</label><input type="text" id="nt-nome" placeholder="Nome do técnico"></div>'
+    +'<div class="fld"><label>Nº de registro</label><input type="text" id="nt-reg" placeholder="Ex: 41.278-3"></div>'
+    +'<button class="bp" style="margin-top:4px" onclick="salvarTec()"><i class="ti ti-plus"></i> Adicionar</button>'
+    +'<button class="bs" onclick="renderTecLista()"><i class="ti ti-x"></i> Cancelar</button>'
+    +'</div>';
+  d.innerHTML=f+d.innerHTML;
+}
+function salvarTec(){
+  var n=parseInt(document.getElementById('nt-num').value);
+  var nm=document.getElementById('nt-nome').value.trim();
+  var rg=document.getElementById('nt-reg').value.trim();
+  if(!n||!nm||!rg){toast('Preencha todos os campos.',false);return;}
+  if(TECNICOS[n]){toast('Número '+n+' já existe!',false);return;}
+  TECNICOS[n]={nome:nm,reg:rg};
+  toast('Técnico "'+nm+'" adicionado!',true);
+  renderTecLista();
+}
+
+// PERSISTÊNCIA
+function loadP(){try{var r=localStorage.getItem('cx_v1');pacientes=r?JSON.parse(r):[];if(!Array.isArray(pacientes))pacientes=[];}catch(e){pacientes=[];}}
+function saveLocal(){try{localStorage.setItem('cx_v1',JSON.stringify(pacientes));}catch(e){}}
+
+function buscarNuvem(callback){
+  // Usa JSONP para evitar bloqueio CORS
+  var script = document.createElement('script');
+  var cbName = 'cb_' + Date.now();
+  window[cbName] = function(data){
+    delete window[cbName];
+    document.body.removeChild(script);
+    callback(null, data);
+  };
+  script.onerror = function(){
+    delete window[cbName];
+    if(document.body.contains(script)) document.body.removeChild(script);
+    callback(new Error('Erro de conexão'), null);
+  };
+  script.src = SHEETS + '?callback=' + cbName + '&t=' + Date.now();
+  document.body.appendChild(script);
+  // Timeout de 15 segundos
+  setTimeout(function(){
+    if(window[cbName]){
+      delete window[cbName];
+      if(document.body.contains(script)) document.body.removeChild(script);
+      callback(new Error('Timeout'), null);
+    }
+  }, 15000);
+}
+
+async function buscarNuvemFetch(){
+  try{
+    var r = await fetch(SHEETS + '?t=' + Date.now(), {
+      method: 'GET',
+      cache: 'no-cache',
+      headers: {'Accept': 'application/json'}
+    });
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    var d = await r.json();
+    return d;
+  }catch(e){
+    throw e;
+  }
+}
+
+async function carregarNuvem(){
+  syncStatus('wait','Conectando à nuvem...');
+  
+  async function tentar(){
+    try{
+      var d = await buscarNuvemFetch();
+      if(d && d.ok){
+        if(d.pacientes && d.pacientes.length > 0){
+          pacientes = d.pacientes.sort(function(a,b){return b.id-a.id;});
+          saveLocal();
+        }
+        syncStatus('ok','Sincronizado ✓ — ' + new Date().toLocaleTimeString('pt-BR'));
+        renderStats();
+        if(document.getElementById('pg-arquivo').classList.contains('active')){
+          renderArq(filtroAtual);
+        }
+        return true;
+      }
+      return false;
+    }catch(e){
+      // Tenta JSONP como fallback
+      return new Promise(function(resolve){
+        buscarNuvem(function(err, data){
+          if(!err && data && data.ok){
+            if(data.pacientes && data.pacientes.length > 0){
+              pacientes = data.pacientes.sort(function(a,b){return b.id-a.id;});
+              saveLocal();
+            }
+            syncStatus('ok','Sincronizado ✓ — ' + new Date().toLocaleTimeString('pt-BR'));
+            renderStats();
+            if(document.getElementById('pg-arquivo').classList.contains('active')){
+              renderArq(filtroAtual);
+            }
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        });
+      });
+    }
+  }
+
+  // Tenta 3 vezes
+  var ok = false;
+  for(var i=0; i<3; i++){
+    ok = await tentar();
+    if(ok) break;
+    if(i < 2) await new Promise(function(r){setTimeout(r, 3000);});
+  }
+  if(!ok) syncStatus('off','Offline — dados salvos localmente');
+
+  // Atualiza a cada 15 segundos
+  setInterval(async function(){
+    var ok = await tentar();
+    if(!ok) syncStatus('off','Sem conexão — tentando reconectar...');
+  }, 15000);
+}
+
+async function enviarNuvem(pac){
+  try{
+    syncStatus('wait','Salvando na nuvem...');
+    var r=await fetch(SHEETS,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'salvar',paciente:pac})
+    });
+    var d=await r.json();
+    if(d.ok){syncStatus('ok','Salvo na nuvem ✓');}
+    else{syncStatus('off','Erro ao salvar na nuvem');}
+  }catch(e){syncStatus('off','Salvo localmente — sem conexão');}
+}
+async function atualizarNuvem(pac){
+  try{
+    await fetch(SHEETS,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'atualizar',paciente:pac})});
+    syncStatus('ok','Atualizado ✓');
+  }catch(e){syncStatus('off','Atualizado localmente');}
+}
+async function deletarNuvem(id){
+  try{await fetch(SHEETS,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'deletar',id:id})});}catch(e){}
+}
+
+// SALVAR
+function coletar(){
+  return{id:Date.now(),
+    nome:document.getElementById('f-nome').value.trim(),
+    tel:document.getElementById('f-tel').value,nasc:document.getElementById('f-nasc').value,
+    sus:document.getElementById('f-sus').value,cpf:document.getElementById('f-cpf').value,
+    sint:document.getElementById('f-sint').value,
+    grav:TRI.grav,fum:TRI.fum,met:TRI.met,
+    data:document.getElementById('f-data').value||new Date().toISOString().split('T')[0],
+    hag:document.getElementById('f-hag').value,hre:document.getElementById('f-hre').value,
+    mlaudo:document.getElementById('f-mlaudo').value,
+    exames:selIncs.slice(),
+    tec1:getTec('f-tec1'),tec1n:document.getElementById('f-tec1').value,
+    tec2:getTec('f-tec2'),tec2n:document.getElementById('f-tec2').value,
+    rdata:'',rdoc:'',rnome:'',
+    fotoFicha:fotoFicha,fotoPedido:fotoPedido
+  };
+}
+async function salvar(){
+  var p=coletar();if(!p.nome){toast('Informe o nome do paciente.',false);return;}
+  pacientes.unshift(p);saveLocal();
+  await enviarNuvem(p);
+  selIncs=[];fotoFicha=null;fotoPedido=null;limpar();
+  toast('Paciente "'+p.nome+'" salvo!',true);
+}
+async function salvarBaixar(){
+  var p=coletar();if(!p.nome){toast('Informe o nome do paciente.',false);return;}
+  pacientes.unshift(p);saveLocal();
+  await enviarNuvem(p);
+  gerarFicha(p);selIncs=[];fotoFicha=null;fotoPedido=null;limpar();
+  toast('Salvo e ficha baixada!',true);
+}
+function limpar(){
+  ['f-nome','f-tel','f-sus','f-cpf','f-sint','f-hag','f-hre','f-tec1','f-tec2','f-rdoc','f-rnome'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('f-nasc').value='';document.getElementById('f-rdata').value='';
+  document.getElementById('f-mlaudo').value='';
+  document.getElementById('f-data').value=new Date().toISOString().split('T')[0];
+  tog('grav','nao');tog('fum','nao');tog('met','nao');
+  [0,1,2].forEach(function(i){var b=document.getElementById('med-'+i);if(b)b.className='med-btn';});
+  ['td1','td2'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});
+  document.getElementById('ent-exames').innerHTML='<span style="font-size:13px;color:#94a3b8">Vá à aba <strong>Incidências</strong> para selecionar</span>';
+}
+
+// GERAR FICHA HTML
+function gerarFicha(p){
+  function tri(v,l){var c=v==='sim'?'#fee2e2':'#dcfce7',tc=v==='sim'?'#991b1b':'#166534';
+    return '<div style="flex:1;border:1px solid #e2e8f0;border-radius:8px;padding:8px;text-align:center"><div style="font-size:10px;font-weight:bold;color:#64748b;margin-bottom:5px">'+l+'</div><div style="background:'+c+';color:'+tc+';font-weight:bold;font-size:13px;padding:3px 10px;border-radius:20px;display:inline-block">'+(v==='sim'?'SIM':'NÃO')+'</div></div>';}
+  var exStr=p.exames&&p.exames.length?p.exames.map(function(e,i){return '<tr><td style="width:28px;text-align:center">'+(i+1)+'</td><td>'+e+'</td><td style="width:70px;text-align:center">☐</td></tr>';}).join(''):'<tr><td colspan="3" style="text-align:center;color:#94a3b8">Nenhum exame</td></tr>';
+  var html='<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Ficha — '+p.nome+'</title>'
+    +'<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:12px;padding:16px;max-width:210mm;margin:0 auto}'
+    +'.topo{text-align:center;margin-bottom:12px;border-bottom:2px solid #185FA5;padding-bottom:10px}.topo h2{font-size:16px;font-weight:bold;color:#185FA5}'
+    +'.titulo{text-align:center;font-size:13px;font-weight:bold;background:#185FA5;color:#fff;padding:8px;border-radius:6px;margin-bottom:14px}'
+    +'.sec{margin-bottom:12px}.sec-t{font-size:11px;font-weight:bold;color:#fff;background:#475569;padding:4px 10px;border-radius:5px;margin-bottom:8px;text-transform:uppercase}'
+    +'.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}'
+    +'.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:6px}'
+    +'.c label{font-size:10px;font-weight:bold;color:#64748b;display:block;margin-bottom:2px;text-transform:uppercase}'
+    +'.c span{display:block;border-bottom:1px solid #cbd5e1;padding:2px 0;font-size:12px;min-height:20px}'
+    +'table{width:100%;border-collapse:collapse}th,td{border:1px solid #cbd5e1;padding:5px 8px;font-size:11px}'
+    +'th{background:#f1f5f9;font-weight:bold;text-transform:uppercase;font-size:10px}'
+    +'.ret{background:#f0fdf4;border:2px solid #86efac;border-radius:8px;padding:12px;margin-top:12px}'
+    +'.assin{display:flex;gap:20px;margin-top:18px}.asl{flex:1;border-top:1px solid #000;padding-top:4px;text-align:center;font-size:10px;color:#64748b}'
+    +'@media print{@page{size:A4;margin:10mm}body{padding:0}}</style></head><body>'
+    +'<div class="topo"><h2>CONEXÃO X — COMPLEXO HOSPITALAR ZONA NOROESTE</h2><p style="font-size:11px;color:#555;margin-top:2px">Secretaria de Saúde · Radiologia Digital</p></div>'
+    +'<div class="titulo">RELATÓRIO INDIVIDUAL DE ATENDIMENTO — RADIOLOGIA</div>'
+    +'<div class="sec"><div class="sec-t">Dados do paciente</div>'
+    +'<div class="c" style="margin-bottom:6px"><label>Nome completo</label><span>'+p.nome+'</span></div>'
+    +'<div class="g3"><div class="c"><label>Nascimento</label><span>'+fmtD(p.nasc)+'</span></div><div class="c"><label>CPF/RG</label><span>'+(p.cpf||'—')+'</span></div><div class="c"><label>Nº SUS</label><span>'+(p.sus||'—')+'</span></div></div>'
+    +'<div class="c"><label>Sintomas</label><span style="min-height:28px">'+(p.sint||'—')+'</span></div></div>'
+    +'<div class="sec"><div class="sec-t">Triagem de segurança</div><div style="display:flex;gap:8px">'+tri(p.grav,'Gravidez?')+tri(p.fum,'Fumante?')+tri(p.met,'Artefato metálico?')+'</div></div>'
+    +'<div class="sec"><div class="sec-t">Informações do exame</div>'
+    +'<div class="g3"><div class="c"><label>Data</label><span>'+fmtD(p.data)+'</span></div><div class="c"><label>Agendado</label><span>'+(p.hag||'—')+'</span></div><div class="c"><label>Realizado</label><span>'+(p.hre||'—')+'</span></div></div>'
+    +'<div class="c" style="margin-bottom:6px"><label>Médico responsável pelo laudo</label><span>'+(p.mlaudo||'—')+'</span></div>'
+    +'<table><thead><tr><th>#</th><th>Exame / Incidência</th><th>Impresso?</th></tr></thead><tbody>'+exStr+'</tbody></table>'
+    +'<div class="g2" style="margin-top:8px"><div class="c"><label>Técnico 1</label><span>'+(p.tec1n?'Nº '+p.tec1n+' — ':'')+( p.tec1||'—')+'</span></div><div class="c"><label>Técnico 2</label><span>'+(p.tec2n?'Nº '+p.tec2n+' — ':'')+( p.tec2||'—')+'</span></div></div></div>'
+    +'<div class="ret"><p style="font-size:12px;font-weight:bold;color:#166534;margin-bottom:8px;text-transform:uppercase">✓ Retirada do exame</p>'
+    +'<div class="g3"><div class="c"><label>Data da retirada</label><span>'+(p.rdata?fmtD(p.rdata):'___ / ___ / ______')+'</span></div><div class="c"><label>Documento</label><span>'+(p.rdoc||'—')+'</span></div><div class="c"><label>Retirado por</label><span>'+(p.rnome||'—')+'</span></div></div>'
+    +'<div class="assin"><div class="asl">Assinatura do responsável</div><div class="asl">Assinatura do técnico</div></div></div>'
+    +(p.fotoFicha?'<div style="margin-top:12px"><p style="font-size:11px;font-weight:bold;color:#475569;margin-bottom:6px;text-transform:uppercase">Foto da ficha</p><img src="'+p.fotoFicha+'" style="width:100%;border-radius:8px;border:1px solid #e2e8f0"></div>':'')
+    +(p.fotoPedido?'<div style="margin-top:8px"><p style="font-size:11px;font-weight:bold;color:#475569;margin-bottom:6px;text-transform:uppercase">Foto do pedido</p><img src="'+p.fotoPedido+'" style="width:100%;border-radius:8px;border:1px solid #e2e8f0"></div>':'')
+    +'</body></html>';
+  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download='Ficha_'+p.nome.replace(/\s+/g,'_')+'_'+p.data+'.html';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+// BACKUP
+function exportBackup(){
+  if(!pacientes.length){toast('Nenhum paciente.',false);return;}
+  var b=new Blob([JSON.stringify(pacientes,null,2)],{type:'application/json'});
+  var u=URL.createObjectURL(b);var a=document.createElement('a');
+  a.href=u;a.download='backup_cx_'+new Date().toISOString().split('T')[0]+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);
+  toast('Backup exportado!',true);
+}
+function importBackup(ev){
+  var f=ev.target.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=async function(e){
+    try{
+      var d=JSON.parse(e.target.result);
+      if(!Array.isArray(d))throw new Error();
+      if(!confirm('Importar '+d.length+' registros?'))return;
+      d.forEach(function(p){if(!pacientes.find(function(x){return x.id===p.id;})){pacientes.push(p);}});
+      pacientes.sort(function(a,b){return b.id-a.id;});
+      saveLocal();renderArq(filtroAtual);renderStats();
+      toast('Backup importado!',true);
+    }catch(e){toast('Arquivo inválido.',false);}
+  };
+  r.readAsText(f);ev.target.value='';
+}
+
+// STATS
+function renderStats(){
+  var a=document.getElementById('stats');
+  var mes=new Date().toISOString().split('T')[0].substring(0,7);
+  a.innerHTML='<div class="stat-card"><div class="stat-num">'+pacientes.length+'</div><div class="stat-lbl">Total</div></div>'
+    +'<div class="stat-card"><div class="stat-num">'+pacientes.filter(function(p){return(p.data||'').startsWith(mes);}).length+'</div><div class="stat-lbl">Este mês</div></div>';
+}
+
+// ARQUIVO
+function filtrar(v){filtroAtual=v;mesSel=null;renderArq(v);}
+function renderArq(filtro){
+  var lista=document.getElementById('arq-lista'),tabs=document.getElementById('mtabs');
+  document.getElementById('arq-det').style.display='none';lista.style.display='block';
+  var pacs=filtro?pacientes.filter(function(p){var f=filtro.toLowerCase();return p.nome.toLowerCase().includes(f)||(p.sus||'').includes(f)||(p.exames||[]).join(' ').toLowerCase().includes(f)||(p.data||'').includes(f);}):pacientes;
+  var meses=[...new Set(pacs.map(function(p){if(!p.data)return null;var d=new Date(p.data+'T00:00:00');return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}).filter(Boolean))].sort().reverse();
+  if(!mesSel&&meses.length)mesSel=meses[0];
+  tabs.innerHTML='';
+  meses.forEach(function(m){var pts=m.split('-');var btn=document.createElement('button');btn.className='mtab'+(m===mesSel?' active':'');btn.textContent=MESES[parseInt(pts[1])-1]+'/'+pts[0];btn.onclick=function(){mesSel=m;renderArq(filtro);};tabs.appendChild(btn);});
+  var doMes=pacs.filter(function(p){if(!p.data)return false;var d=new Date(p.data+'T00:00:00');return(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'))===mesSel;});
+  var agrup={};
+  doMes.forEach(function(p){var d=new Date(p.data+'T00:00:00');var k=String(d.getDate()).padStart(2,'0')+' — '+DSEM[d.getDay()];if(!agrup[k])agrup[k]=[];agrup[k].push(p);});
+  lista.innerHTML='';
+  var dias=Object.keys(agrup).sort().reverse();
+  if(!dias.length){lista.innerHTML='<p style="text-align:center;color:#94a3b8;font-size:14px;padding:28px">Nenhum paciente encontrado</p>';return;}
+  dias.forEach(function(dia){
+    var sec=document.createElement('div');
+    var dh=document.createElement('p');dh.className='dia-lbl';dh.textContent=dia;sec.appendChild(dh);
+    agrup[dia].forEach(function(p){
+      var c=document.createElement('div');c.className='pc';
+      var ini=p.nome.trim().split(' ').filter(function(w){return w.length>0;}).slice(0,2).map(function(w){return w[0];}).join('').toUpperCase();
+      var exs=p.exames||[];var exStr=exs.slice(0,2).join(' · ')+(exs.length>2?' +'+(exs.length-2)+' mais':'');
+      var badge=p.rdata?'<span style="background:#dcfce7;color:#166534;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;margin-left:5px">Retirado</span>':'<span style="background:#fee2e2;color:#991b1b;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;margin-left:5px">Pendente</span>';
+      c.innerHTML='<div class="av">'+ini+'</div><div style="flex:1;min-width:0"><div class="pn">'+p.nome+badge+'</div><div class="pi">SUS: '+(p.sus||'—')+' · '+(p.hag||'--:--')+'</div>'+(exStr?'<div class="pe">'+exStr+'</div>':'')+'</div><i class="ti ti-chevron-right" style="color:#cbd5e1;font-size:20px;flex-shrink:0"></i>';
+      c.onclick=function(){verDet(p.id);};sec.appendChild(c);
+    });
+    lista.appendChild(sec);
+  });
+}
+
+function verDet(id){
+  var p=pacientes.find(function(x){return x.id===id;});if(!p)return;
+  var d=document.getElementById('arq-det');d.style.display='block';document.getElementById('arq-lista').style.display='none';
+  function bdg(v){return v==='sim'?'<span class="bs-sim">Sim</span>':'<span class="bs-nao">Não</span>';}
+  function row(l,v){return '<div class="dr"><span class="dl">'+l+'</span><span class="dv">'+(v||'—')+'</span></div>';}
+  var ini=p.nome.trim().split(' ').filter(function(w){return w.length>0;}).slice(0,2).map(function(w){return w[0];}).join('').toUpperCase();
+  var fF=p.fotoFicha?'<div style="margin-top:10px"><p style="font-size:11px;font-weight:800;color:#64748b;margin-bottom:5px;text-transform:uppercase">Foto da ficha</p><img src="'+p.fotoFicha+'" style="width:100%;border-radius:10px;border:1px solid #e2e8f0"></div>':'';
+  var fP=p.fotoPedido?'<div style="margin-top:8px"><p style="font-size:11px;font-weight:800;color:#64748b;margin-bottom:5px;text-transform:uppercase">Foto do pedido</p><img src="'+p.fotoPedido+'" style="width:100%;border-radius:10px;border:1px solid #e2e8f0"></div>':'';
+  d.innerHTML='<div class="card" style="position:relative">'
+    +'<button onclick="fecharDet()" style="position:absolute;top:12px;right:12px;background:#f1f5f9;border:none;width:36px;height:36px;border-radius:50%;font-size:20px;cursor:pointer;color:#64748b;font-weight:bold">×</button>'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-right:44px"><div class="av" style="width:52px;height:52px;font-size:18px">'+ini+'</div><div><div class="pn" style="font-size:17px">'+p.nome+'</div><div class="pi">'+fmtD(p.data)+'</div></div></div>'
+    +row('Nascimento',fmtD(p.nasc))+row('SUS',p.sus)+row('CPF/RG',p.cpf)+row('Telefone',p.tel)
+    +'<div class="dr"><span class="dl">Gravidez</span><span class="dv">'+bdg(p.grav)+'</span></div>'
+    +'<div class="dr"><span class="dl">Fumante</span><span class="dv">'+bdg(p.fum)+'</span></div>'
+    +'<div class="dr"><span class="dl">Artefato metálico</span><span class="dv">'+bdg(p.met)+'</span></div>'
+    +'<div class="dr"><span class="dl">Sintomas</span><span class="dv" style="font-size:12px">'+(p.sint||'—')+'</span></div>'
+    +row('Agendado',p.hag||'—')+row('Realizado',p.hre||'—')+row('Médico laudo',p.mlaudo||'—')
+    +row('Técnico 1',(p.tec1n?'Nº '+p.tec1n+' — ':'')+( p.tec1||'—'))
+    +row('Técnico 2',(p.tec2n?'Nº '+p.tec2n+' — ':'')+( p.tec2||'—'))
+    +'<div style="margin-top:12px"><p style="font-size:11px;font-weight:800;color:#64748b;margin-bottom:7px;text-transform:uppercase">Exames ('+(p.exames||[]).length+')</p>'
+    +((p.exames||[]).map(function(e){return '<span class="tag" style="margin:3px">'+e+'</span>';}).join('')||'<span style="font-size:13px;color:#94a3b8">Nenhum</span>')
+    +'</div>'+fF+fP
+    +'<div style="margin-top:14px;padding-top:12px;border-top:1px solid #f1f5f9">'
+    +'<p style="font-size:11px;font-weight:800;color:#64748b;margin-bottom:8px;text-transform:uppercase">Retirada do exame</p>'
+    +(p.rdata?'<div style="background:#dcfce7;border:1.5px solid #86efac;border-radius:10px;padding:10px 12px;margin-bottom:10px"><p style="font-size:13px;font-weight:700;color:#166534">✓ Retirado em '+fmtD(p.rdata)+'</p><p style="font-size:12px;color:#166534;margin-top:2px">Por: '+(p.rnome||'—')+' · Doc: '+(p.rdoc||'—')+'</p></div>':'<div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:10px;padding:10px 12px;margin-bottom:10px"><p style="font-size:13px;font-weight:700;color:#c2410c">⏳ Ainda não retirado</p></div>')
+    +'<div class="ret-form"><h4>✏️ '+(p.rdata?'Atualizar':'Registrar')+' retirada</h4>'
+    +'<div class="fld"><label>Data da retirada *</label><input type="date" id="ed-rd" value="'+(p.rdata||'')+'"></div>'
+    +'<div class="fld"><label>Documento</label><input id="ed-rdoc" value="'+(p.rdoc||'')+'" placeholder="RG, CPF, CNH..."></div>'
+    +'<div class="fld"><label>Nome de quem retirou</label><input id="ed-rn" value="'+(p.rnome||'')+'" placeholder="Nome completo"></div>'
+    +'<button class="bp" onclick="salvarRet('+p.id+')"><i class="ti ti-device-floppy"></i> Salvar retirada</button></div></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">'
+    +'<button class="bg" style="margin:0;font-size:13px;padding:12px" onclick="baixarFicha('+p.id+')"><i class="ti ti-download"></i> Baixar ficha</button>'
+    +'<button class="bd" onclick="excluir('+p.id+')"><i class="ti ti-trash"></i> Excluir</button>'
+    +'</div></div>';
+  window.scrollTo(0,0);
+}
+
+async function salvarRet(id){
+  var rd=document.getElementById('ed-rd').value;
+  if(!rd){toast('Informe a data da retirada.',false);return;}
+  var campos={rdata:rd,rdoc:document.getElementById('ed-rdoc').value,rnome:document.getElementById('ed-rn').value};
+  var idx=pacientes.findIndex(function(p){return p.id===id;});
+  if(idx>=0){Object.assign(pacientes[idx],campos);saveLocal();await atualizarNuvem(pacientes[idx]);}
+  toast('Retirada registrada!',true);verDet(id);
+}
+function baixarFicha(id){var p=pacientes.find(function(x){return x.id===id;});if(p)gerarFicha(p);}
+function fecharDet(){document.getElementById('arq-det').style.display='none';document.getElementById('arq-lista').style.display='block';}
+async function excluir(id){
+  if(!confirm('Excluir este registro?'))return;
+  pacientes=pacientes.filter(function(p){return p.id!==id;});
+  saveLocal();await deletarNuvem(id);fecharDet();renderArq(filtroAtual);renderStats();
+  toast('Registro excluído.',true);
+}
+
+// IA PEDIDO
+async function procPedido(ev){
+  var file=ev.target.files[0];if(!file)return;
+  var r=new FileReader();
+  r.onload=async function(e){
+    document.getElementById('prev-ped-img').src=e.target.result;
+    document.getElementById('prev-ped').style.display='block';
+    document.getElementById('ai-load').style.display='block';
+    document.getElementById('ai-result').style.display='none';
+    try{
+      var resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:file.type||'image/jpeg',data:e.target.result.split(',')[1]}},
+          {type:'text',text:'Analise este pedido médico. Retorne APENAS JSON: nome_paciente, medico, exames (array), observacoes. Sem markdown.'}
+        ]}]})});
+      var d=await resp.json();
+      var parsed=JSON.parse(d.content.map(function(i){return i.text||'';}).join('').replace(/```json|```/g,'').trim());
+      document.getElementById('ai-nome').value=parsed.nome_paciente||'';
+      document.getElementById('ai-med').value=parsed.medico||'';
+      document.getElementById('ai-ex').value=Array.isArray(parsed.exames)?parsed.exames.join('\n'):parsed.exames||'';
+      document.getElementById('ai-ob').value=parsed.observacoes||'';
+      document.getElementById('ai-result').style.display='block';
+    }catch(err){toast('Erro ao processar imagem.',false);}
+    document.getElementById('ai-load').style.display='none';
+  };
+  r.readAsDataURL(file);
+}
+function preencherPedido(){
+  var n=document.getElementById('ai-nome').value,m=document.getElementById('ai-med').value;
+  if(n)document.getElementById('f-nome').value=n;
+  if(m)document.getElementById('f-mlaudo').value=m;
+  goTo('entrevista',document.querySelectorAll('.nav button')[0]);
+  toast('Dados preenchidos!',true);
+}
+</script>
+</body>
+</html>
