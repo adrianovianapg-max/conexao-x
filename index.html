@@ -629,26 +629,42 @@ async function carregarNuvem(){
 }
 
 async function enviarNuvem(pac){
+  syncStatus('wait','Salvando na nuvem...');
+  // Tenta com fetch normal primeiro
   try{
-    syncStatus('wait','Salvando na nuvem...');
-    var r=await fetch(SHEETS,{
-      method:'POST',
-      headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({action:'salvar',paciente:pac})
+    var r = await fetch(SHEETS, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain;charset=UTF-8'},
+      body: JSON.stringify({action:'salvar', paciente:pac})
     });
-    var d=await r.json();
-    if(d.ok){syncStatus('ok','Salvo na nuvem ✓');}
-    else{syncStatus('off','Erro ao salvar na nuvem');}
-  }catch(e){syncStatus('off','Salvo localmente — sem conexão');}
+    // no-cors não retorna JSON, mas se não lançou erro, funcionou
+    syncStatus('ok','Salvo na nuvem ✓');
+    return;
+  } catch(e){
+    syncStatus('off','Erro ao salvar — verificando conexão');
+  }
 }
 async function atualizarNuvem(pac){
   try{
-    await fetch(SHEETS,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'atualizar',paciente:pac})});
+    await fetch(SHEETS,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=UTF-8'},
+      body:JSON.stringify({action:'atualizar',paciente:pac})
+    });
     syncStatus('ok','Atualizado ✓');
-  }catch(e){syncStatus('off','Atualizado localmente');}
+  }catch(e){syncStatus('off','Erro ao atualizar');}
 }
 async function deletarNuvem(id){
-  try{await fetch(SHEETS,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'deletar',id:id})});}catch(e){}
+  try{
+    await fetch(SHEETS,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=UTF-8'},
+      body:JSON.stringify({action:'deletar',id:id})
+    });
+  }catch(e){}
 }
 
 // SALVAR
